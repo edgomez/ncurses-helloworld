@@ -21,10 +21,10 @@ struct ApplicationContext
 };
 
 /** Global application context.
- * 
+ *
  * This allows the signal handler to record the new window size when used
  * within a windowed terminal
-*/
+ */
 ApplicationContext g_app;
 
 /** Screen Size change signal handler present before installing this app's one */
@@ -32,8 +32,9 @@ void (*previousHandleScreenResize)(int sig) = nullptr;
 
 /** Screen Resize signal handler
  * @param sig Signal number being raised
-*/
-void handleScreenResize(int sig)
+ */
+void
+handleScreenResize(int sig)
 {
     if (previousHandleScreenResize)
     {
@@ -44,15 +45,16 @@ void handleScreenResize(int sig)
     refresh();
     getmaxyx(stdscr, g_app.h, g_app.w);
 }
-}
+} // namespace
 
 /** Main program entry point
  * @param argc number of arguments
  * @param argv array of program's arguments
  * @retval #EXIT_SUCCESS when everything went well
  * @retval #EXIT_FAILURE when an error occured
-*/
-extern "C" int main(int /* argc */, char** /* argv */)
+ */
+extern "C" int
+main(int /* argc */, char** /* argv */)
 {
     initscr();
 
@@ -76,7 +78,7 @@ extern "C" int main(int /* argc */, char** /* argv */)
     CursesCleanExit cursesCleanExit;
 
     std::chrono::time_point next = std::chrono::high_resolution_clock::now();
-    bool exit = false;
+    bool                    exit = false;
     while (!exit)
     {
         next += std::chrono::milliseconds(250);
@@ -93,20 +95,20 @@ extern "C" int main(int /* argc */, char** /* argv */)
 
         wborder(stdscr, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        static constexpr char hello[] = "Hello World !";
-        static constexpr int helloLen = static_cast<int>(sizeof(hello));
-        wmove(stdscr, g_app.h/2, std::max(0, (g_app.w - helloLen) /2 ));
+        static constexpr char hello[]  = "Hello World !";
+        static constexpr int  helloLen = static_cast<int>(sizeof(hello));
+        wmove(stdscr, g_app.h / 2, std::max(0, (g_app.w - helloLen) / 2));
         waddstr(stdscr, hello);
 
-        static constexpr char quitMsg[] = "(Press 'q' to quit)";
-        static constexpr int quitMsgLen = static_cast<int>(sizeof(quitMsg));
-        wmove(stdscr, g_app.h/2 + 1, std::max(0, (g_app.w - quitMsgLen) /2 ));
+        static constexpr char quitMsg[]  = "(Press 'q' to quit)";
+        static constexpr int  quitMsgLen = static_cast<int>(sizeof(quitMsg));
+        wmove(stdscr, g_app.h / 2 + 1, std::max(0, (g_app.w - quitMsgLen) / 2));
         waddstr(stdscr, quitMsg);
 
         wrefresh(stdscr);
 
         std::this_thread::sleep_until(next);
     }
-    
+
     return EXIT_SUCCESS;
 }
